@@ -171,3 +171,25 @@ void test_when_an_array_is_resized_into_larger_size_the_array_populated_by_zeros
 	assertEqual(((char *)result)[3],0);
 	assertEqual(resizedArray.length, 4);
 }
+
+void test_in_an_array_1_2_3_4_5_indexOf_3_gives_2(){
+	int size = sizeof(int);
+	int length = 5;
+	ArrayUtil array = create(size,length);
+	int x=3;
+	((int *)array.base)[0]=1;
+	((int *)array.base)[1]=2;
+	((int *)array.base)[2]=3;
+	assertEqual(findIndex(array, &x), 2);
+}
+
+void test_in_an_array_1_2_3_4_5_indexOf_7_gives_neg_1(){
+	int size = sizeof(int);
+	int length = 5;
+	ArrayUtil array = create(size,length);
+	int x=7;
+	((int *)array.base)[0]=1;
+	((int *)array.base)[1]=2;
+	((int *)array.base)[2]=3;
+	assertEqual(findIndex(array, &x), -1);
+}
