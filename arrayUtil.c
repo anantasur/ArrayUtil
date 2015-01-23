@@ -19,34 +19,28 @@ int areEqual(ArrayUtil a, ArrayUtil b){
 
 ArrayUtil create(int typeSize, int length){
 	void_ptr  array = calloc(length,typeSize);
-	ArrayUtil new_array;
-	new_array.length = length;
-	new_array.typeSize = typeSize;
-	new_array.base = array;
-	return new_array;
+	ArrayUtil util;
+	util.length = length;
+	util.typeSize = typeSize;
+	util.base = array;
+	return util;
 }
 
-ArrayUtil resize(ArrayUtil util, int length){
-	int i,index;
-	char* base;
-	int oldLength =util.length*util.typeSize;	
-	int diff = (length-util.length)*util.typeSize;
-
-	util.base = realloc(util.base,length*util.typeSize);
-	util.length = length;
-	base = (char*)util.base;
-
-	for(i = 0;i < diff;i++){
-		base[i+oldLength] = 0;
+ArrayUtil resize(ArrayUtil util,int length) {
+	int i,len;
+	ArrayUtil newUtil = create( util.typeSize, length);
+	if(util.length == length) return util;
+	len = (length>util.length) ? util.length : length;
+	for(i=0;i<len*util.typeSize;i++) {
+		((base_ptr)newUtil.base)[i] = ((base_ptr)util.base)[i];
 	}
-	return util;
-} 
+	return newUtil;
+}
 
 int findIndex(ArrayUtil util, void* element){
 	int i,count=0;
 	char ele = *((char *)element);
 	for(i=0;i<util.length*util.typeSize;i=i+util.typeSize){
-		// printf("ele%d------------indexval%d\n", ele,((char *)util.base)[i]);
 		if(((char *)util.base)[i]==ele){
 			return count;
 		}
@@ -81,4 +75,16 @@ void* findLast(ArrayUtil util, MatchFunc* match, void* hint){
 			return element;
 	}
 	return NULL;
+}
+
+int count(ArrayUtil util, MatchFunc* match, void* hint){
+	int i,count=0;
+	base_ptr array = (base_ptr)util.base;
+	void_ptr element;
+	for(i=0;i<util.length;i++){
+		element = &(array[i*util.typeSize]);;
+		if(match(hint, element))
+			count++;
+	}
+	return count;
 }

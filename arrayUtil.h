@@ -1,6 +1,7 @@
 typedef struct arrayUtil ArrayUtil;
 typedef char * base_ptr;
 typedef void * void_ptr;
+typedef char*  String;
 struct arrayUtil{
 	void *base;
 	int typeSize;
@@ -26,3 +27,5 @@ void* findFirst(ArrayUtil util, MatchFunc*, void* hint);
 void* findLast(ArrayUtil util, MatchFunc*, void* hint);
 
 int count(ArrayUtil util, MatchFunc* match, void* hint); 
+
+int filter(ArrayUtil util, MatchFunc* match, void* hint, void** destination, int maxItems );
