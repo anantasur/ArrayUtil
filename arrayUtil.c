@@ -18,11 +18,10 @@ int areEqual(ArrayUtil a, ArrayUtil b){
 }
 
 ArrayUtil create(int typeSize, int length){
-	void_ptr  array = calloc(length,typeSize);
 	ArrayUtil util;
-	util.length = length;
+	util.base = calloc(typeSize,length);
 	util.typeSize = typeSize;
-	util.base = array;
+	util.length = length;
 	return util;
 }
 
@@ -87,4 +86,52 @@ int count(ArrayUtil util, MatchFunc* match, void* hint){
 			count++;
 	}
 	return count;
+}
+
+int filter(ArrayUtil util, MatchFunc* match, void* hint, void** destination, int maxItems ){
+	int i,count = 0;
+	base_ptr* dest =(base_ptr*) destination;
+	base_ptr base = (base_ptr) util.base;
+	void_star element ;
+	for (i = 0;i < util.length;i++){
+		element =&base[i*util.typeSize];
+		if(match(hint,element)){
+			if(count==maxItems) return count;
+			dest[count] = element;	
+			count++;
+		}
+	}
+	return count;
+}
+
+void map(ArrayUtil source, ArrayUtil destination, ConvertFunc* convert, void* hint){
+	int i;
+	base_ptr base = (base_ptr) source.base, baseAddr;
+	base_ptr dest = (base_ptr)destination.base, destAddr;
+
+	for (i=0;i<source.length;i++){
+		baseAddr=&(base[(i*source.typeSize)]);
+		destAddr=&(dest[(i*destination.typeSize)]);
+		convert(hint,baseAddr,destAddr);
+	}
+}
+
+void forEach(ArrayUtil util, OperationFunc* operation, void* hint){
+	int i;
+	base_ptr base = (base_ptr) util.base, baseAddr;
+	for (i=0;i<util.length;i++){
+		baseAddr = &(base[(i*util.typeSize)]);
+		operation(hint, baseAddr);
+	}
+}
+
+void* reduce(ArrayUtil util, ReducerFunc* reducer, void* hint, void* intialValue){
+	int i;
+	base_ptr base = (base_ptr) util.base, baseAddr;
+	void * preValue = intialValue ;
+	for (i=0;i<util.length;i++){
+		baseAddr = &(base[(i*util.typeSize)]);
+		preValue =	reducer(hint,preValue, baseAddr);
+	}
+	return preValue;
 }
